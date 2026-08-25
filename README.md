@@ -66,11 +66,9 @@ claude plugin marketplace add ai-with-remy/skill-atlas-plugin
 claude plugin install extract-skills@skills-atlas --yes
 ```
 
-Quit Claude completely and reopen it. Then open **Settings → Plugins → Extract Skills → Connectors** and click **Connect** on **Skills Atlas** (`skills-atlas`). Do not Connect leftover custom **Skills Atlas Test 1**, and do not add a custom MCP URL.
+Quit Claude completely and reopen it. Then open **Terminal**, run `claude`, and type `/extract-skills:import-skills`. Approve the browser login. Desktop Home chat cannot sign in.
 
-You can also type `/mcp` and authorize `skills-atlas`.
-
-Then paste the prompt from Atlas `/{org}/sync`, or run `/extract-skills:import-skills`.
+Or paste the prompt from Atlas `/{org}/sync` into that `claude` session or Cursor.
 
 ### Cursor
 
@@ -92,8 +90,7 @@ Restart the ChatGPT desktop app, open the Plugins Directory, select the **Skills
 
 The extract plugin MCP connector is `skills-atlas` (display name Skills Atlas) pointing at the live Skills Atlas MCP URL. Sign in through the host's MCP authentication prompt.
 
-- Claude Code: Plugins → Extract Skills → Connectors → Connect **Skills Atlas**, or `/mcp` authorize `skills-atlas`.
-- Ignore leftover custom connectors such as **Skills Atlas Test 1**.
+- Claude Code: open Terminal, run `claude`, type `/extract-skills:import-skills`, and approve the browser login. Desktop Home chat cannot complete sign-in.
 - Never paste access tokens into chat, commit them, add them to this package, or place them in an imported skill.
 - Do not add a custom MCP server URL.
 
@@ -122,10 +119,6 @@ npm run validate
 ```
 
 ## Troubleshooting
-
-### Connectors still shows Skills Atlas Test 1 only
-
-That leftover is a custom connector, not this plugin. Update to Extract Skills, then Connect **Skills Atlas** on the plugin. Remove or ignore Test 1. Do not add a custom MCP URL.
 
 ### MCP server is missing or disconnected
 

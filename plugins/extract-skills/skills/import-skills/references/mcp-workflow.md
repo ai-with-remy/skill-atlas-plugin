@@ -14,11 +14,10 @@ That is the OAuth connector to use.
 - Call `list_import_destinations` in this conversation. Do not spawn a
   subagent, Task, or background run.
 - Do not add a custom MCP server URL. Do not ask the user to paste a token.
-- Ignore leftover custom connectors, including **Skills Atlas Test 1**. They
-  are not this plugin.
-- If login cannot open, tell the user: Settings → Plugins → Extract Skills →
-  Connectors, click Connect on **Skills Atlas**. Or type `/mcp` and authorize
-  `skills-atlas`.
+- If this session cannot open a login window, stop. Tell the user this chat
+  cannot sign in to Skills Atlas. They must open Terminal, run `claude`,
+  type `/extract-skills:import-skills`, and approve the browser login. Or
+  paste the prompt from Atlas Sync into that `claude` session or Cursor.
 
 ## `list_import_destinations`
 
@@ -104,4 +103,5 @@ import. Do not treat this import skill as the team-plugin installer.
 Use the MCP client's OAuth flow on the plugin connector `skills-atlas`. Never
 ask the user to paste a token into chat. Never place credentials in plugin
 files, candidate folders, manifests, previews, or logs. Never add a custom MCP
-URL to work around a missing Connect button.
+URL. Desktop Home and other non-interactive chats cannot complete sign-in; use
+`claude` in Terminal or Cursor.

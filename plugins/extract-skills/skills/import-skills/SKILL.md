@@ -13,7 +13,7 @@ Read these references before acting:
 
 - `references/local-paths.md` for discovery roots and symlink handling.
 - `references/classification.md` for matching live departments.
-- `references/mcp-workflow.md` for Connect, MCP tools, and transaction order.
+- `references/mcp-workflow.md` for MCP tools and transaction order.
 - `references/security.md` for the non-execution boundary.
 - `references/limits.md` for preflight checks and chunking.
 
@@ -35,11 +35,14 @@ Stay in this conversation. Do not spawn a subagent, Task, or background run — 
 
 Your first action is to call `list_import_destinations` in this turn. That tool call is what signs this agent in. Do not add a custom MCP server URL. Do not ask the user to paste a token.
 
-Use the plugin MCP connector named `skills-atlas` (shown as **Skills Atlas**). Do not use leftover custom connectors, including **Skills Atlas Test 1**.
+Use the plugin MCP connector named `skills-atlas` (shown as **Skills Atlas**).
 
 - If a browser login opens, stop immediately. Tell the user: approve Skills Atlas in that window, then reply continue.
-- If the tools exist but this session cannot open a login window, stop. Tell the user: open Settings → Plugins → Extract Skills → Connectors, click Connect on **Skills Atlas** (not custom Skills Atlas Test 1). Or type `/mcp` and authorize `skills-atlas`. Then reply continue. Do not add a new MCP server.
-- If the tools are missing, stop. Tell the user to add the Skills Atlas marketplace (`ai-with-remy/skill-atlas-plugin`) if needed, then install **Extract Skills @ Skills Atlas** (`extract-skills@skills-atlas`) from Settings → Plugins. Then Connect the Skills Atlas connector. Do not add a custom MCP server.
+- If the tools exist but this session cannot open a login window, stop. Print only this block, then wait:
+
+  This chat cannot sign in to Skills Atlas. Open Terminal, run `claude`, type `/extract-skills:import-skills`, and approve the browser login. Or paste the prompt from Atlas Sync into that `claude` session or Cursor.
+
+- If the tools are missing, stop. Tell the user to add the Skills Atlas marketplace (`ai-with-remy/skill-atlas-plugin`) if needed, then install **Extract Skills @ Skills Atlas** (`extract-skills@skills-atlas`) from Settings → Plugins. Then open Terminal, run `claude`, and type `/extract-skills:import-skills`. Do not add a custom MCP server.
 
 If the pasted Atlas prompt names an org slug, lock onto that organization. If that org is absent, stop and tell the user they must sign in as an editor of that Atlas.
 

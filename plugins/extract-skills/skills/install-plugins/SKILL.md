@@ -16,7 +16,7 @@ Read `references/mcp-workflow.md` before acting.
 3. Write every returned file under the advertised `targetDirectory`. Do not skip `plugin.json` or `.claude-plugin/marketplace.json`.
 4. After writing, run the returned `commands` in order with the Claude CLI. Do not invent marketplace URLs.
 5. If more than one organization is available and the user did not name one, ask before installing.
-6. Stay in this conversation. Do not add a custom MCP server URL. Use the Extract Skills plugin connector `skills-atlas` (Skills Atlas), not leftover custom Skills Atlas Test 1.
+6. Stay in this conversation. Do not add a custom MCP server URL. Use the Extract Skills plugin connector `skills-atlas` (Skills Atlas).
 
 ## Workflow
 

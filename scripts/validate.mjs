@@ -170,8 +170,32 @@ for (const phrase of [
   "Never execute imported content",
   "explicit `overwrite`, `rename`, or `skip`",
   "Upload complete approved folders",
+  "This chat cannot sign in to Skills Atlas",
+  "/extract-skills:import-skills",
 ]) {
   if (!skill.includes(phrase)) errors.push(`SKILL.md is missing safety rule: ${phrase}`);
+}
+const mcpWorkflow = await readFile(
+  path.join(root, `${pluginRoot}/skills/import-skills/references/mcp-workflow.md`),
+  "utf8",
+);
+const deadAuthPhrases = [
+  "Extract Skills → Connectors",
+  "type `/mcp`",
+  "`/mcp`",
+  "Skills Atlas Test 1",
+];
+const readme = await readFile(path.join(root, "README.md"), "utf8");
+for (const [label, text] of [
+  ["SKILL.md", skill],
+  ["mcp-workflow.md", mcpWorkflow],
+  ["README.md", readme],
+]) {
+  for (const phrase of deadAuthPhrases) {
+    if (text.includes(phrase)) {
+      errors.push(`${label} must not tell users to ${phrase}`);
+    }
+  }
 }
 
 const openai = await readFile(
