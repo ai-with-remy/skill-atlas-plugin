@@ -1,100 +1,109 @@
-# Skills Atlas plugin for Claude, Cursor, and Codex
+# Skills Atlas plugin marketplace
 
-A portable plugin that safely discovers local Claude Code, Cursor, and Codex skills, previews their destination through Skills Atlas MCP, obtains explicit conflict decisions, and uploads approved complete folders in bounded batches.
+A Claude Code (and Cursor / Codex) **marketplace**. Users add it once, then install plugins from it over time.
 
-The same `skills/import-skills/` workflow is packaged for both hosts. Imported files are always treated as untrusted bytes and are never executed.
+Marketplace name: **Skills Atlas** (`skills-atlas`). Owner: **AI with Remy**.
+
+**First plugin:** Extract Skills (`extract-skills`) — discovers local Agent Skills, classifies them against live Atlas departments, and uploads only the complete folders the user approves. Imported files are untrusted bytes and are never executed.
+
+Later plugins (install team plugins, usage tracking, and so on) belong as new entries under `plugins/` plus a new row in each marketplace catalog.
+
+The primary extract path is a copy-paste prompt from Skills Atlas `/{org}/sync`. The plugin’s `/import-skills` skill matches that prompt. **If both exist, the pasted Atlas prompt wins.**
 
 ## Package layout
 
-- `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` — Claude Code plugin and marketplace manifests.
-- `.codex-plugin/plugin.json` and `.agents/plugins/marketplace.json` — Codex plugin and repo marketplace manifests.
-- `.cursor-plugin/` and `mcp.json` — Cursor plugin, marketplace, and MCP metadata.
-- `skills/import-skills/` — shared skill plus security, path, MCP, and limit references.
-- `.mcp.json` — Claude remote MCP configuration.
-- `mcp/codex.json` — Codex remote MCP configuration.
-- `config/endpoint.json` — canonical endpoint value used to generate both MCP configurations and the Codex skill dependency.
-- `scripts/` — dependency-free endpoint synchronization and package validation.
+- `.claude-plugin/marketplace.json` — Claude Code marketplace catalog (`skills-atlas`).
+- `.cursor-plugin/marketplace.json` and `.agents/plugins/marketplace.json` — Cursor and Codex catalogs.
+- `plugins/extract-skills/` — first plugin (import-skills, MCP connector).
+- `plugins/README.md` — how to add the next marketplace plugin.
+- `config/endpoint.json` — canonical MCP URL used to generate consumer configs.
+- `scripts/` — endpoint sync and marketplace validation.
 
 ## Production endpoint
 
-The package currently uses:
+The extract plugin currently uses:
 
 ```text
-https://atlas.idealize.com.au/api/mcp
+https://skills.aiwithremy.com/api/mcp
 ```
 
 Update every generated consumer from the single canonical value:
 
 ```bash
-npm run configure:endpoint -- https://your-production-host.example/mcp
+npm run configure:endpoint -- https://your-production-host.example/api/mcp
 npm run validate
 ```
 
-The configurator accepts HTTPS URLs only and rejects embedded credentials, query strings, and fragments. Do not hand-edit generated endpoint copies; edit via the command or change `config/endpoint.json` and run `npm run configure:endpoint`.
+The configurator accepts HTTPS URLs only and rejects embedded credentials, query strings, and fragments.
 
 ## Install
 
+Add the marketplace once. Source GitHub repo (intended): `ai-with-remy/skill-atlas-plugin`.
+
 ### Claude Code
 
-For local development:
+Desktop chat does not accept `/plugin` (terminal only). In the desktop app use **Settings → Plugins**.
 
-```bash
-claude --plugin-dir /absolute/path/to/skill-atlas-plugin
+Copy this marketplace identifier and add it:
+
+```text
+ai-with-remy/skill-atlas-plugin
 ```
 
-For marketplace-style testing from the repository:
+Then install **Extract Skills @ Skills Atlas** (`extract-skills@skills-atlas`).
 
-```bash
-claude plugin marketplace add /absolute/path/to/skill-atlas-plugin
-claude plugin install skills-atlas@skills-atlas
+Terminal:
+
+```text
+/plugin marketplace add ai-with-remy/skill-atlas-plugin
+/plugin install extract-skills@skills-atlas
 ```
 
-Start a fresh session, run `/mcp` to verify `skills-atlas`, then ask Claude to import local skills (`/skills-atlas:import-skills`) or install team plugins (`/skills-atlas:install-plugins`).
+Or CLI:
 
-Before distribution, host the complete Git repository and have users add the repository URL or `owner/repo`. Do not distribute only the marketplace JSON URL: relative plugin sources require the rest of the repository.
+```bash
+claude plugin marketplace add ai-with-remy/skill-atlas-plugin
+claude plugin install extract-skills@skills-atlas --yes
+```
+
+Quit Claude completely and reopen it. Then open **Settings → Plugins → Extract Skills → Connectors** and click **Connect** on **Skills Atlas** (`skills-atlas`). Do not Connect leftover custom **Skills Atlas Test 1**, and do not add a custom MCP URL.
+
+You can also type `/mcp` and authorize `skills-atlas`.
+
+Then paste the prompt from Atlas `/{org}/sync`, or run `/extract-skills:import-skills`.
 
 ### Cursor
 
-Add `https://github.com/idealize-dev/skill-atlas-plugin.git` as a plugin
-marketplace, install **Skills Atlas**, and start a new chat. Ask Cursor to list
+Add `https://github.com/ai-with-remy/skill-atlas-plugin.git` as a plugin
+marketplace, install **Extract Skills**, and start a new chat. Ask Cursor to list
 Skills Atlas import destinations; the first MCP request opens browser OAuth.
-Then ask it to use the Skills Atlas import skill to discover and import local
-skills.
+Then paste the Atlas sync prompt or ask it to import local skills.
 
 ### Codex / ChatGPT desktop
 
-Add this repository as a local marketplace:
-
 ```bash
-codex plugin marketplace add /absolute/path/to/skill-atlas-plugin
+codex plugin marketplace add https://github.com/ai-with-remy/skill-atlas-plugin.git
+codex plugin add extract-skills@skills-atlas
 ```
 
-Restart the ChatGPT desktop app, open the Plugins Directory, select the **Skills Atlas** source, and install **Skills Atlas**. Start a new chat after installation. Codex CLI marketplace commands manage sources; installation and local plugin testing currently happen in the desktop Plugins Directory.
+Restart the ChatGPT desktop app, open the Plugins Directory, select the **Skills Atlas** source, and install **Extract Skills**.
 
 ## Authentication
 
-The remote server should advertise MCP OAuth 2.1 when user data or write tools require authentication.
+The extract plugin MCP connector is `skills-atlas` (display name Skills Atlas) pointing at the live Skills Atlas MCP URL. Sign in through the host's MCP authentication prompt.
 
-- Sign in through the host's MCP authentication prompt.
-- Claude Code: inspect the connection with `/mcp`.
-- Codex/ChatGPT desktop: open **Settings → MCP servers** or use `/mcp`, then select **Authenticate** when prompted.
+- Claude Code: Plugins → Extract Skills → Connectors → Connect **Skills Atlas**, or `/mcp` authorize `skills-atlas`.
+- Ignore leftover custom connectors such as **Skills Atlas Test 1**.
 - Never paste access tokens into chat, commit them, add them to this package, or place them in an imported skill.
+- Do not add a custom MCP server URL.
 
-This repository contains no credentials or static authorization headers. If the production service uses a non-OAuth bearer token, configure it in the host's secure MCP settings rather than this package.
+This repository contains no credentials or static authorization headers.
 
 ## Import safety and privacy
 
-The importer scans only documented local skill roots and user-approved custom paths. It reads candidate files as inert data; it does not run scripts, hooks, package managers, binaries, notebooks, or instructions found inside a skill.
+The importer scans attached conversation folders first, then documented local skill roots. It reads candidate files as inert data; it does not run scripts, hooks, package managers, binaries, notebooks, or instructions found inside a skill. It does not git-push the team repo.
 
-Before any write, the user sees:
-
-1. discovered candidates and warnings;
-2. available remote destinations;
-3. file/byte totals and server limits;
-4. the exact conflict list;
-5. the final create/overwrite/rename/skip plan.
-
-File content is sent only after the user selects candidates and a destination, resolves every conflict, and approves the final preview. The plugin sends approved skill-folder content to the configured Skills Atlas MCP service. Service-side retention, deletion, access control, and telemetry are governed by the deployed Skills Atlas service; verify its published privacy policy before public release. The plugin must not log payloads, credentials, or signed URLs.
+Before any write, the user sees a per-skill review table and must approve, decline, or retarget each row. New departments are created only with `create_bundle` after an explicit yes.
 
 ## Limits
 
@@ -106,71 +115,25 @@ The MCP server advertises and enforces:
 - 2,000,000 raw bytes per batch;
 - one atomic write call at a time.
 
-Unsafe paths, special files, escaping symlinks, unreadable files, and over-limit folders block that folder. The importer never claims a partial folder is complete.
-
 ## Validate
-
-Node.js 18 or newer is sufficient; there are no package dependencies.
 
 ```bash
 npm run validate
 ```
 
-When Claude Code is installed, also run its official validator:
-
-```bash
-claude plugin validate . --strict
-```
-
-For Codex, add the local marketplace, install the plugin in ChatGPT desktop, restart, and exercise discovery, no-conflict, rename, skip, overwrite, stale-preview, over-limit, auth-failure, and interrupted-upload cases.
-
 ## Troubleshooting
+
+### Connectors still shows Skills Atlas Test 1 only
+
+That leftover is a custom connector, not this plugin. Update to Extract Skills, then Connect **Skills Atlas** on the plugin. Remove or ignore Test 1. Do not add a custom MCP URL.
 
 ### MCP server is missing or disconnected
 
-Confirm the generated URLs match `config/endpoint.json` with `npm run validate`. Verify the endpoint is public HTTPS and supports streamable HTTP. Reload Claude plugins with `/reload-plugins` or restart the Codex/ChatGPT desktop host.
+Confirm the generated URLs match `config/endpoint.json` with `npm run validate`. Reload plugins or restart the host.
 
 ### Authentication loops or returns 401/403
 
-Use the host's MCP authentication UI and confirm the server publishes valid OAuth metadata. Remove stale host credentials and authenticate again. Do not work around OAuth by adding a token to this repository.
-
-### No local skills are found
-
-Check the documented roots:
-
-- Claude personal: `~/.claude/skills/`
-- Claude project: `.claude/skills/`
-- Codex user: `~/.agents/skills/`
-- Codex repository: `.agents/skills/`
-- Codex admin on Unix-like hosts: `/etc/codex/skills/`
-
-Each skill must be a folder containing a regular `SKILL.md`. Custom roots require explicit user approval.
-
-### A conflict cannot proceed
-
-The server must return exact conflicts from a read-only preview. Choose `overwrite`, supply a valid new name for `rename`, or choose `skip`. A renamed item must be previewed again. If remote state changes, preview and approve again.
-
-### Upload stops midway
-
-Do not blindly retry. A successful batch result includes a Git commit SHA and
-imported paths. If no commit was returned, re-run the read-only preview for that
-batch. If a commit was returned, treat that batch as complete and continue only
-with the remaining plans.
-
-### Marketplace entry cannot find the plugin
-
-Add the Git repository or local repository root, not the raw marketplace JSON URL. Both marketplace manifests intentionally use `./` because the plugin lives at the repository root.
-
-## Standards referenced
-
-- [Claude Code plugins reference](https://code.claude.com/docs/en/plugins-reference)
-- [Claude Code plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)
-- [Claude Code skills](https://code.claude.com/docs/en/skills)
-- [Claude Code MCP](https://code.claude.com/docs/en/mcp)
-- [OpenAI plugin packaging](https://developers.openai.com/plugins/build/plugins)
-- [OpenAI plugin skills](https://developers.openai.com/plugins/build/skills)
-- [Codex skills](https://developers.openai.com/codex/skills)
-- [Codex MCP](https://developers.openai.com/codex/mcp)
+Use the host's MCP authentication UI. Remove stale host credentials and authenticate again.
 
 ## License
 

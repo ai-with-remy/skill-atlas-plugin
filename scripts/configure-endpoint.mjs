@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const pluginRoot = path.join(root, "plugins", "extract-skills");
 const configPath = path.join(root, "config", "endpoint.json");
 const requested = process.argv[2];
 
@@ -50,15 +51,15 @@ const cursorConfig = {
 };
 
 await Promise.all([
-  writeFile(path.join(root, ".mcp.json"), `${JSON.stringify(claudeConfig, null, 2)}\n`),
-  writeFile(path.join(root, "mcp.json"), `${JSON.stringify(cursorConfig, null, 2)}\n`),
+  writeFile(path.join(pluginRoot, ".mcp.json"), `${JSON.stringify(claudeConfig, null, 2)}\n`),
+  writeFile(path.join(pluginRoot, "mcp.json"), `${JSON.stringify(cursorConfig, null, 2)}\n`),
   writeFile(
-    path.join(root, "mcp", "codex.json"),
+    path.join(pluginRoot, "mcp", "codex.json"),
     `${JSON.stringify(codexConfig, null, 2)}\n`,
   ),
 ]);
 
-const openaiPath = path.join(root, "skills", "import-skills", "agents", "openai.yaml");
+const openaiPath = path.join(pluginRoot, "skills", "import-skills", "agents", "openai.yaml");
 const openai = await readFile(openaiPath, "utf8");
 const nextOpenai = openai.replace(
   /^(\s+url:\s+).*$/m,

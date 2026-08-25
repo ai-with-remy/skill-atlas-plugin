@@ -1,6 +1,11 @@
 # Install-plugins MCP contract
 
-Use only these advertised Skills Atlas tools.
+Use only these advertised Skills Atlas tools. This skill installs **team**
+plugins onto the local machine. It is not the local-skill import path
+(`/import-skills` or a pasted Atlas sync prompt).
+
+Use the plugin MCP connector `skills-atlas` (Skills Atlas). Do not add a
+custom MCP URL. Ignore leftover custom connectors such as Skills Atlas Test 1.
 
 ## `list_installable_plugins`
 

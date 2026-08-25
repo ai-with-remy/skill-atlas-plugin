@@ -1,24 +1,35 @@
 {
   "name": "skills-atlas",
   "owner": {
-    "name": "Skills Atlas",
-    "url": "https://skills-atlas.vercel.app"
+    "name": "AI with Remy",
+    "url": "https://skills.aiwithremy.com"
   },
-  "description": "Portable Skills Atlas plugins.",
+  "description": "Skills Atlas plugins. Add this marketplace once, then install the plugins you need.",
+  "version": "1.0.0",
   "plugins": [
     {
-      "name": "skills-atlas",
-      "source": "./",
-      "description": "Connect Skills Atlas MCP, import local skills, and install team plugins onto this machine.",
+      "name": "extract-skills",
+      "displayName": "Extract Skills",
+      "source": "./plugins/extract-skills",
+      "description": "Discover local Agent Skills, classify them into Atlas departments, and import approved folders through Skills Atlas MCP.",
+      "version": "0.4.0",
       "author": {
-        "name": "Skills Atlas"
+        "name": "AI with Remy",
+        "url": "https://skills.aiwithremy.com"
       },
-      "category": "development",
+      "homepage": "https://skills.aiwithremy.com",
+      "repository": "https://github.com/ai-with-remy/skill-atlas-plugin",
+      "license": "MIT",
+      "category": "productivity",
       "tags": [
         "skills",
         "import",
-        "mcp"
+        "mcp",
+        "extract"
       ]
     }
-  ]
+  ],
+  "renames": {
+    "skills-atlas": "extract-skills"
+  }
 }

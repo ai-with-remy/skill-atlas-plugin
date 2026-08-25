@@ -1,0 +1,37 @@
+{
+  "name": "extract-skills",
+  "version": "0.4.0",
+  "description": "Discover local Agent Skills, classify them into Atlas departments, and import approved folders through Skills Atlas MCP.",
+  "author": {
+    "name": "AI with Remy",
+    "url": "https://skills.aiwithremy.com"
+  },
+  "homepage": "https://skills.aiwithremy.com",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "claude",
+    "codex",
+    "mcp",
+    "import",
+    "extract"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./mcp/codex.json",
+  "interface": {
+    "displayName": "Extract Skills",
+    "shortDescription": "Import local skills safely",
+    "longDescription": "Discover local Claude, Cursor, and Codex skills, classify them against live Atlas departments, and upload only approved complete skill folders.",
+    "developerName": "AI with Remy",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://skills.aiwithremy.com",
+    "defaultPrompt": [
+      "Paste the Skills Atlas sync prompt, then import the local skills I approve."
+    ],
+    "brandColor": "#6366F1"
+  }
+}

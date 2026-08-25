@@ -1,8 +1,8 @@
 {
   "name": "skills-atlas-plugin",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "private": true,
-  "description": "Portable Claude, Cursor, and Codex plugin for importing local skills and installing Skills Atlas team plugins.",
+  "description": "Skills Atlas Claude plugin marketplace. First plugin extracts local skills into Atlas over MCP.",
   "license": "MIT",
   "type": "module",
   "scripts": {

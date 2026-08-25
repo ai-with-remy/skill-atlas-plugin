@@ -1,15 +1,15 @@
 {
   "name": "skills-atlas",
   "owner": {
-    "name": "Skills Atlas"
+    "name": "AI with Remy"
   },
   "metadata": {
-    "description": "Import local Agent Skills into Skills Atlas."
+    "description": "Skills Atlas plugins. Add this marketplace once, then install Extract Skills to import local skills."
   },
   "plugins": [
     {
-      "name": "skills-atlas",
-      "source": ".",
+      "name": "extract-skills",
+      "source": "./plugins/extract-skills",
       "description": "Discover, review, and import local Agent Skills."
     }
   ]

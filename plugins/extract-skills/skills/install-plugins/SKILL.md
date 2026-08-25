@@ -1,11 +1,11 @@
 ---
 name: install-plugins
-description: Install Skills Atlas team plugins onto this machine as local Claude plugins. Use when the user asks to install, sync, or update team skills or team plugins from Skills Atlas.
+description: Install this organization's Skills Atlas team plugins onto this machine as local Claude plugins. Use when the user asks to install or update team plugins from Skills Atlas. Do not use this skill to import local SKILL.md folders — that is import-skills or a pasted Atlas sync prompt.
 ---
 
 # Install team plugins
 
-Fetch the user's Skills Atlas team plugins over MCP, write them as a local Claude marketplace, and register them with the Claude CLI. Do not clone Forgejo or GitHub team remotes.
+Fetch the user's Skills Atlas **team** plugins over MCP, write them as a local Claude marketplace, and register them with the Claude CLI. This is not the local-skill import path. Do not clone GitHub team remotes.
 
 Read `references/mcp-workflow.md` before acting.
 
@@ -16,6 +16,7 @@ Read `references/mcp-workflow.md` before acting.
 3. Write every returned file under the advertised `targetDirectory`. Do not skip `plugin.json` or `.claude-plugin/marketplace.json`.
 4. After writing, run the returned `commands` in order with the Claude CLI. Do not invent marketplace URLs.
 5. If more than one organization is available and the user did not name one, ask before installing.
+6. Stay in this conversation. Do not add a custom MCP server URL. Use the Extract Skills plugin connector `skills-atlas` (Skills Atlas), not leftover custom Skills Atlas Test 1.
 
 ## Workflow
 
@@ -23,9 +24,11 @@ Read `references/mcp-workflow.md` before acting.
 2. Call `install_plugins` with that `orgSlug` and optional `plugins` keys.
 3. Expand `targetDirectory` (`~` is the home directory). Replace any previous files in that directory for paths returned by the tool.
 4. For each file, decode `content` from `base64` and write the exact bytes to `targetDirectory/<path>`. Create parent directories as needed.
-5. Run each string in `commands` with the shell, in order. These add the local marketplace and install each plugin.
+5. Run each string in `commands` with the shell, in order. These add the local marketplace and install each team plugin.
 6. Tell the user to quit Claude completely and reopen it. Report the installed `installSpec` values (`plugin@marketplace`).
 
 ## After install
 
 Team skills are invoked as plugin skills, for example `/brand:some-skill` or the plugin name shown in Customize → Plugins. To refresh later, run this skill again.
+
+To import **local** skill folders into Atlas, use `/import-skills` or paste the copy from `/{org}/sync`. Do not use this skill for that.

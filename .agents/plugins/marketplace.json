@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "skills-atlas",
+      "name": "extract-skills",
       "source": {
         "source": "local",
-        "path": "./"
+        "path": "./plugins/extract-skills"
       },
       "policy": {
         "installation": "AVAILABLE",

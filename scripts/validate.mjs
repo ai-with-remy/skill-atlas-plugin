@@ -3,23 +3,27 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const pluginRoot = "plugins/extract-skills";
 const errors = [];
 
 const required = [
-  ".claude-plugin/plugin.json",
   ".claude-plugin/marketplace.json",
-  ".codex-plugin/plugin.json",
-  ".agents/plugins/marketplace.json",
-  ".cursor-plugin/plugin.json",
   ".cursor-plugin/marketplace.json",
-  ".mcp.json",
-  "mcp.json",
-  "mcp/codex.json",
+  ".agents/plugins/marketplace.json",
   "config/endpoint.json",
-  "skills/import-skills/SKILL.md",
-  "skills/import-skills/agents/openai.yaml",
-  "skills/install-plugins/SKILL.md",
-  "skills/install-plugins/references/mcp-workflow.md",
+  `${pluginRoot}/.claude-plugin/plugin.json`,
+  `${pluginRoot}/.codex-plugin/plugin.json`,
+  `${pluginRoot}/.cursor-plugin/plugin.json`,
+  `${pluginRoot}/.mcp.json`,
+  `${pluginRoot}/mcp.json`,
+  `${pluginRoot}/mcp/codex.json`,
+  `${pluginRoot}/skills/import-skills/SKILL.md`,
+  `${pluginRoot}/skills/import-skills/references/classification.md`,
+  `${pluginRoot}/skills/import-skills/references/local-paths.md`,
+  `${pluginRoot}/skills/import-skills/references/mcp-workflow.md`,
+  `${pluginRoot}/skills/import-skills/agents/openai.yaml`,
+  `${pluginRoot}/skills/install-plugins/SKILL.md`,
+  `${pluginRoot}/skills/install-plugins/references/mcp-workflow.md`,
 ];
 
 for (const relative of required) {
@@ -40,15 +44,15 @@ async function json(relative) {
 }
 
 const endpointConfig = await json("config/endpoint.json");
-const claudeManifest = await json(".claude-plugin/plugin.json");
+const claudeManifest = await json(`${pluginRoot}/.claude-plugin/plugin.json`);
 const claudeMarketplace = await json(".claude-plugin/marketplace.json");
-const codexManifest = await json(".codex-plugin/plugin.json");
+const codexManifest = await json(`${pluginRoot}/.codex-plugin/plugin.json`);
 const codexMarketplace = await json(".agents/plugins/marketplace.json");
-const cursorManifest = await json(".cursor-plugin/plugin.json");
+const cursorManifest = await json(`${pluginRoot}/.cursor-plugin/plugin.json`);
 const cursorMarketplace = await json(".cursor-plugin/marketplace.json");
-const claudeMcp = await json(".mcp.json");
-const cursorMcp = await json("mcp.json");
-const codexMcp = await json("mcp/codex.json");
+const claudeMcp = await json(`${pluginRoot}/.mcp.json`);
+const cursorMcp = await json(`${pluginRoot}/mcp.json`);
+const codexMcp = await json(`${pluginRoot}/mcp/codex.json`);
 
 let endpoint;
 try {
@@ -66,7 +70,7 @@ for (const [name, manifest] of [
   ["Codex", codexManifest],
   ["Cursor", cursorManifest],
 ]) {
-  if (manifest.name !== "skills-atlas") errors.push(`${name} plugin name must be skills-atlas.`);
+  if (manifest.name !== "extract-skills") errors.push(`${name} plugin name must be extract-skills.`);
   if (!/^\d+\.\d+\.\d+$/.test(manifest.version ?? "")) {
     errors.push(`${name} version must be semantic x.y.z.`);
   }
@@ -82,32 +86,80 @@ if (codexManifest.mcpServers !== "./mcp/codex.json") {
 if (cursorManifest.mcpServers !== "./mcp.json") {
   errors.push("Cursor manifest must reference ./mcp.json.");
 }
-if (claudeMarketplace.plugins?.[0]?.source !== "./") {
-  errors.push("Claude marketplace must source the repository-root plugin.");
+if (claudeMarketplace.name !== "skills-atlas") {
+  errors.push("Claude marketplace name must be skills-atlas.");
 }
-if (codexMarketplace.plugins?.[0]?.source?.path !== "./") {
-  errors.push("Codex marketplace must source the repository-root plugin.");
+if (claudeMarketplace.owner?.name !== "AI with Remy") {
+  errors.push("Claude marketplace owner must be AI with Remy.");
 }
-if (cursorMarketplace.plugins?.[0]?.source !== ".") {
-  errors.push("Cursor marketplace must source the repository-root plugin.");
+if (claudeManifest.displayName !== "Extract Skills") {
+  errors.push("Claude plugin displayName must be Extract Skills.");
+}
+if (claudeMarketplace.plugins?.[0]?.name !== "extract-skills") {
+  errors.push("Claude marketplace must list extract-skills first.");
+}
+if (claudeMarketplace.plugins?.[0]?.source !== "./plugins/extract-skills") {
+  errors.push("Claude marketplace must source ./plugins/extract-skills.");
+}
+if (claudeMarketplace.renames?.["skills-atlas"] !== "extract-skills") {
+  errors.push("Claude marketplace must rename skills-atlas to extract-skills.");
+}
+if (codexMarketplace.plugins?.[0]?.source?.path !== "./plugins/extract-skills") {
+  errors.push("Codex marketplace must source ./plugins/extract-skills.");
+}
+if (cursorMarketplace.plugins?.[0]?.source !== "./plugins/extract-skills") {
+  errors.push("Cursor marketplace must source ./plugins/extract-skills.");
 }
 
 const configuredEndpoint = endpointConfig.mcpEndpoint;
 if (claudeMcp.mcpServers?.["skills-atlas"]?.url !== configuredEndpoint) {
-  errors.push(".mcp.json is out of sync; run npm run configure:endpoint.");
+  errors.push(`${pluginRoot}/.mcp.json is out of sync; run npm run configure:endpoint.`);
 }
 if (codexMcp["skills-atlas"]?.url !== configuredEndpoint) {
-  errors.push("mcp/codex.json is out of sync; run npm run configure:endpoint.");
+  errors.push(`${pluginRoot}/mcp/codex.json is out of sync; run npm run configure:endpoint.`);
 }
 if (cursorMcp.mcpServers?.["skills-atlas"]?.url !== configuredEndpoint) {
-  errors.push("mcp.json is out of sync; run npm run configure:endpoint.");
+  errors.push(`${pluginRoot}/mcp.json is out of sync; run npm run configure:endpoint.`);
 }
 
-const skill = await readFile(path.join(root, "skills/import-skills/SKILL.md"), "utf8");
+if (Object.keys(claudeMcp.mcpServers ?? {}).some((key) => /test 1/i.test(key))) {
+  errors.push(".mcp.json must not ship a Test 1 custom connector.");
+}
+if (Object.keys(claudeMcp.mcpServers ?? {}).join() !== "skills-atlas") {
+  errors.push(".mcp.json must expose only the skills-atlas MCP server.");
+}
+if (!configuredEndpoint.includes("skills.aiwithremy.com")) {
+  errors.push("MCP endpoint must be the live Skills Atlas host (skills.aiwithremy.com).");
+}
+if (/idealize-dev|idealise-dev|atlas\.idealize\.com\.au/i.test(
+  JSON.stringify({
+    cursorManifest,
+    claudeManifest,
+    claudeMarketplace,
+    configuredEndpoint,
+  }),
+)) {
+  errors.push("Plugin metadata still references idealize-dev or atlas.idealize.com.au.");
+}
+
+const skill = await readFile(path.join(root, `${pluginRoot}/skills/import-skills/SKILL.md`), "utf8");
+for (const phrase of [
+  "list_import_destinations",
+  "create_bundle",
+  "plan_skill_import",
+  "import_skills",
+  "The pasted Atlas prompt wins",
+  "Do not silently assign General",
+]) {
+  if (!skill.includes(phrase)) errors.push(`SKILL.md is missing sync contract: ${phrase}`);
+}
 if (!skill.startsWith("---\n") || !/^name:\s+import-skills$/m.test(skill)) {
   errors.push("SKILL.md must have import-skills YAML frontmatter.");
 }
-const installSkill = await readFile(path.join(root, "skills/install-plugins/SKILL.md"), "utf8");
+const installSkill = await readFile(
+  path.join(root, `${pluginRoot}/skills/install-plugins/SKILL.md`),
+  "utf8",
+);
 if (!installSkill.startsWith("---\n") || !/^name:\s+install-plugins$/m.test(installSkill)) {
   errors.push("install-plugins SKILL.md must have install-plugins YAML frontmatter.");
 }
@@ -123,7 +175,7 @@ for (const phrase of [
 }
 
 const openai = await readFile(
-  path.join(root, "skills/import-skills/agents/openai.yaml"),
+  path.join(root, `${pluginRoot}/skills/import-skills/agents/openai.yaml`),
   "utf8",
 );
 if (!openai.includes(`url: "${configuredEndpoint}"`)) {
@@ -131,15 +183,15 @@ if (!openai.includes(`url: "${configuredEndpoint}"`)) {
 }
 
 const textFiles = [
-  ".mcp.json",
-  "mcp/codex.json",
-  ".claude-plugin/plugin.json",
-  ".codex-plugin/plugin.json",
+  `${pluginRoot}/.mcp.json`,
+  `${pluginRoot}/mcp/codex.json`,
+  `${pluginRoot}/.claude-plugin/plugin.json`,
+  `${pluginRoot}/.codex-plugin/plugin.json`,
   ".claude-plugin/marketplace.json",
   ".agents/plugins/marketplace.json",
-  ".cursor-plugin/plugin.json",
+  `${pluginRoot}/.cursor-plugin/plugin.json`,
   ".cursor-plugin/marketplace.json",
-  "mcp.json",
+  `${pluginRoot}/mcp.json`,
 ];
 const credentialPattern =
   /("(?:api[_-]?key|access[_-]?token|client[_-]?secret|password)"\s*:\s*")(?!\s*")[^"]+/i;

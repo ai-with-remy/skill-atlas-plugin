@@ -2,7 +2,7 @@
   "mcpServers": {
     "skills-atlas": {
       "type": "http",
-      "url": "https://atlas.idealize.com.au/api/mcp"
+      "url": "https://skills.aiwithremy.com/api/mcp"
     }
   }
 }
