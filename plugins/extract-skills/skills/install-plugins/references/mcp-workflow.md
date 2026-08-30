@@ -26,7 +26,7 @@ Read-only on the Skills Atlas repository. Input:
 
 Omit `plugins` to install every available team plugin. The result includes:
 
-- `targetDirectory` — write root, usually `~/.claude/atlas/<orgSlug>`
+- `targetDirectory` — write root, usually `~/.atlas/<orgSlug>`
 - `files[]` — `path`, `encoding: "base64"`, `content`, `bytes`
 - `commands[]` — Claude CLI commands to run after writing
 - `plugins[]` — `key`, `name`, `installSpec`

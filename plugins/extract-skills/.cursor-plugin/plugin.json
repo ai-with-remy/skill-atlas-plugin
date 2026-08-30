@@ -1,7 +1,7 @@
 {
   "name": "extract-skills",
   "displayName": "Extract Skills",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Discover local Agent Skills, classify them into Atlas departments, and import approved folders through Skills Atlas MCP.",
   "author": {
     "name": "AI with Remy"

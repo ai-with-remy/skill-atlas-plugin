@@ -1,6 +1,6 @@
 {
   "name": "skills-atlas-plugin",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "description": "Skills Atlas Claude plugin marketplace. First plugin extracts local skills into Atlas over MCP.",
   "license": "MIT",
