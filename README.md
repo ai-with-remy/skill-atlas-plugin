@@ -6,7 +6,24 @@ Marketplace name: **Skills Atlas** (`skills-atlas`). Owner: **AI with Remy**.
 
 **First plugin:** Extract Skills (`extract-skills`) — discovers local Agent Skills, classifies them against live Atlas departments, and uploads only the complete folders the user approves. Imported files are untrusted bytes and are never executed.
 
-Later plugins (install team plugins, usage tracking, and so on) belong as new entries under `plugins/` plus a new row in each marketplace catalog.
+Later plugins (usage tracking, and so on) belong as new entries under `plugins/` plus a new row in each marketplace catalog.
+
+## The two ways to get a company's skills onto a computer
+
+These are not alternatives to pick by taste — they serve different people.
+
+| Route | Who it is for | What it needs |
+| --- | --- | --- |
+| `install-team-skills` | Everybody who is **not** the person who set the company up | A device code from Atlas `/{org}/install`. No GitHub, no git, no sign-in |
+| `install-plugins` | Whoever owns the company's repository | MCP plus a browser sign-in, and GitHub access to that repository |
+
+Both install the same approved skills. The plugin route additionally gives real
+plugin behaviour in Claude Code (version numbers, a `/plugin` listing); the
+device-code route is the one that works for a non-technical teammate.
+
+A device code is read-only, tied to one member and one computer, shown once, and
+revocable at any time. It cannot edit skills or read another company's library. See
+`plugins/extract-skills/skills/install-team-skills/references/device-code.md`.
 
 The primary extract path is a copy-paste prompt from Skills Atlas `/{org}/sync`. The plugin’s `/import-skills` skill matches that prompt. **If both exist, the pasted Atlas prompt wins.**
 
@@ -14,7 +31,7 @@ The primary extract path is a copy-paste prompt from Skills Atlas `/{org}/sync`.
 
 - `.claude-plugin/marketplace.json` — Claude Code marketplace catalog (`skills-atlas`).
 - `.cursor-plugin/marketplace.json` and `.agents/plugins/marketplace.json` — Cursor and Codex catalogs.
-- `plugins/extract-skills/` — first plugin (import-skills, MCP connector).
+- `plugins/extract-skills/` — first plugin (import-skills, install-plugins, install-team-skills, MCP connector).
 - `plugins/README.md` — how to add the next marketplace plugin.
 - `config/endpoint.json` — canonical MCP URL used to generate consumer configs.
 - `scripts/` — endpoint sync and marketplace validation.
